@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Multi Plus</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#060912;min-height:100vh;color:#fff;-webkit-user-select:none;user-select:none}
+input,textarea{-webkit-user-select:text;user-select:text;background:none;border:none;color:#fff;font-family:inherit;outline:none;display:block}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.25)}
+.glass{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.btn{cursor:pointer;border:none;font-family:inherit;background:none;color:inherit;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.btn:active{opacity:.75;transform:scale(.97)}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.on{display:flex}
+
+.grad-main{background:linear-gradient(135deg,#7C3AED 0%,#2563EB 50%,#06B6D4 100%)}
+.grad-2fa {background:linear-gradient(135deg,#F59E0B 0%,#EF4444 50%,#EC4899 100%)}
+.grad-prx {background:linear-gradient(135deg,#10B981 0%,#06B6D4 100%)}
+
+.hdr{padding:48px 16px 14px;background:linear-gradient(180deg,rgba(124,58,237,.18) 0%,transparent 100%)}
+.hdr-row{display:flex;align-items:center;justify-content:space-between}
+.hdr-brand{display:flex;align-items:center;gap:11px}
+.hdr-logo{width:44px;height:44px;border-radius:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(124,58,237,.5)}
+.hdr-btns{display:flex;gap:7px}
+.hdr-btn{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+
+.ccard{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;overflow:hidden;margin-bottom:10px}
+.ccard-top{display:flex;align-items:center;gap:12px;padding:13px 13px 9px}
+.ccard-num{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:white;flex-shrink:0}
+.ccard-info{flex:1;min-width:0}
+.ccard-name{font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ccard-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.ccard-actions{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{width:32px;height:32px;border-radius:9px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.ccard-foot{padding:0 13px 13px}
+.open-btn{width:100%;padding:13px;border-radius:13px;border:none;cursor:pointer;color:white;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:99;align-items:flex-end;justify-content:center;padding:0 16px 28px;backdrop-filter:blur(10px)}
+.modal-box{border-radius:24px;padding:22px;width:100%;max-width:400px;background:rgba(15,10,30,.95);border:1px solid rgba(255,255,255,.1)}
+
+.ring-wrap{display:flex;justify-content:center;margin:12px 0}
+.ring{position:relative;width:120px;height:120px}
+.ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;letter-spacing:.08em}
+
+/* Proxy switch feedback */
+.px-switching{opacity:.5;pointer-events:none;transition:opacity .2s}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div id="s-home" class="screen on">
+  <div class="hdr">
+    <div class="hdr-row">
+      <div class="hdr-brand" style="position:relative">
+        <div class="hdr-logo grad-main">
+          <svg viewBox="0 0 24 24" fill="white" width="22" height="22">
+            <circle cx="9" cy="7" r="3.5"/>
+            <circle cx="16.5" cy="8.5" r="2.5"/>
+            <path d="M2 20c0-3.31 3.13-6 7-6s7 2.69 7 6" fill="white"/>
+            <path d="M16.5 14c2.49 0 4.5 1.79 4.5 4" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-size:20px;font-weight:900;background:linear-gradient(135deg,#A78BFA,#38BDF8,#34D399);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Multi Plus</div>
+          <div style="display:flex;align-items:center;gap:7px;margin-top:2px">
+            <div style="font-size:10px;color:rgba(255,255,255,.35)">Multi Account Switcher</div>
+            <button onclick="toggleHeaderMenu(event)"
+              style="display:flex;align-items:center;gap:2px;padding:3px 7px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);cursor:pointer;-webkit-appearance:none">
+              <span style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.55);display:block"></span>
+              <span style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.55);display:block"></span>
+              <span style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.55);display:block"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dropdown menu -->
+        <div id="hdr-menu"
+          style="display:none;position:absolute;top:100%;left:0;z-index:999;margin-top:8px;
+          background:rgba(8,10,22,.97);border:1px solid rgba(124,58,237,.25);
+          border-radius:16px;overflow:hidden;min-width:220px;
+          box-shadow:0 16px 50px rgba(0,0,0,.9)">
+
+          <!-- Clear Cache -->
+          <div onclick="doHeaderClearCache()"
+            style="display:flex;align-items:center;gap:13px;padding:14px 16px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06)"
+            onmouseenter="this.style.background='rgba(124,58,237,.15)'" onmouseleave="this.style.background=''"
+            ontouchstart="this.style.background='rgba(124,58,237,.15)'" ontouchend="this.style.background=''">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" width="18" height="18">
+              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Clear Cache</span>
+          </div>
+
+          <!-- Admin Telegram -->
+          <div onclick="doHeaderUid()"
+            style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(135deg,rgba(0,136,204,.12),rgba(41,182,246,.08));border-left:3px solid #29B6F6;position:relative;overflow:hidden"
+            onmouseenter="this.style.background='rgba(41,182,246,.18)'" onmouseleave="this.style.background='linear-gradient(135deg,rgba(0,136,204,.12),rgba(41,182,246,.08))'"
+            ontouchstart="this.style.background='rgba(41,182,246,.18)'" ontouchend="this.style.background='linear-gradient(135deg,rgba(0,136,204,.12),rgba(41,182,246,.08))'">
+            <div style="width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#0088cc,#29B6F6);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(0,136,204,.5)">
+              <svg viewBox="0 0 24 24" fill="white" width="20" height="20">
+                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.93 6.54l-1.7 8.02c-.12.56-.45.7-.91.44l-2.52-1.86-1.22 1.17c-.13.13-.25.25-.51.25l.18-2.57 4.65-4.2c.2-.18-.04-.28-.31-.1L8.31 14.5l-2.47-.77c-.54-.17-.55-.54.11-.8l9.63-3.71c.45-.16.84.11.7.82z"/>
+              </svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:700;color:#fff">Admin Support</div>
+              <div style="font-size:11px;font-weight:600;color:#29B6F6;margin-top:2px;display:flex;align-items:center;gap:5px">
+                <span style="width:6px;height:6px;border-radius:50%;background:#29B6F6;display:inline-block;box-shadow:0 0 6px #29B6F6"></span>
+                t.me/JAHID_1
+              </div>
+            </div>
+            <div style="background:rgba(41,182,246,.2);border:1px solid rgba(41,182,246,.4);border-radius:8px;padding:4px 9px">
+              <span style="font-size:10px;font-weight:700;color:#29B6F6">Open ↗</span>
+            </div>
+          </div>
+
+          <!-- Select & Delete -->
+          <div onclick="doHeaderSelectDelete()"
+            style="display:flex;align-items:center;gap:13px;padding:14px 16px;color:#fff;font-size:13px;font-weight:600;cursor:pointer"
+            onmouseenter="this.style.background='rgba(239,68,68,.12)'" onmouseleave="this.style.background=''"
+            ontouchstart="this.style.background='rgba(239,68,68,.12)'" ontouchend="this.style.background=''">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" width="18" height="18">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Select &amp; Delete</span>
+          </div>
+        </div>
+      </div>
+      <div class="hdr-btns">
+        <button class="btn hdr-btn glass" onclick="go('2fa')" title="2FA Generator" style="border-color:rgba(245,158,11,.3)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" width="17" height="17">
+            <rect x="5" y="11" width="14" height="10" rx="2" stroke-linecap="round"/>
+            <path d="M8 11V7a4 4 0 118 0v4" stroke-linecap="round"/>
+            <circle cx="12" cy="16" r="1.5" fill="#F59E0B" stroke="none"/>
+          </svg>
+        </button>
+        <button class="btn hdr-btn glass" onclick="openCookiePanel()" title="Cookie Import" style="border-color:rgba(52,211,153,.3)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" width="17" height="17">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="8.5" cy="8.5" r="1.5" fill="#34D399" stroke="none"/>
+            <circle cx="15" cy="9" r="1" fill="#34D399" stroke="none"/>
+            <circle cx="9" cy="15" r="1" fill="#34D399" stroke="none"/>
+            <circle cx="14.5" cy="14.5" r="1.5" fill="#34D399" stroke="none"/>
+          </svg>
+        </button>
+        <button class="btn hdr-btn glass" onclick="go('proxy')" title="Proxy" style="border-color:rgba(16,185,129,.3)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" width="17" height="17">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button class="btn hdr-btn grad-main" onclick="addContainer()" title="Add Account" style="box-shadow:0 0 18px rgba(124,58,237,.5)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" width="18" height="18"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="h-list" style="flex:1;padding:0 16px 24px;overflow-y:auto"></div>
+</div>
+
+<!-- ═══════════════ 2FA ═══════════════ -->
+<div id="s-2fa" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn glass hdr-btn" onclick="go('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" width="18" height="18"><path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div>
+        <div style="font-size:17px;font-weight:800;background:linear-gradient(135deg,#F59E0B,#EF4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent">2FA Generator</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.35)">TOTP Code Generator</div>
+      </div>
+    </div>
+  </div>
+  <div style="flex:1;padding:0 16px 24px;overflow-y:auto">
+    <div class="glass" style="border-radius:16px;padding:16px;margin-bottom:14px">
+      <div style="font-size:10px;color:rgba(245,158,11,.8);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Secret Key</div>
+      <div class="glass" style="border-radius:11px;padding:12px 14px;margin-bottom:12px;border-color:rgba(245,158,11,.2)">
+        <input id="fa-key" type="text" placeholder="Paste 2FA secret key here..." autocomplete="off" style="font-size:14px;width:100%;letter-spacing:.04em"/>
+      </div>
+      <button class="btn grad-2fa" onclick="generate2FA()" style="width:100%;padding:13px;border-radius:12px;color:white;font-weight:700;font-size:14px">Generate Code</button>
+    </div>
+    <div class="glass" id="fa-result" style="border-radius:16px;padding:20px;text-align:center;display:none">
+      <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Current Code</div>
+      <div class="ring-wrap">
+        <div class="ring">
+          <svg viewBox="0 0 120 120" width="120" height="120">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
+            <circle id="fa-ring" cx="60" cy="60" r="52" fill="none" stroke="url(#rg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="0"/>
+            <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#EF4444"/></linearGradient></defs>
+          </svg>
+          <div class="ring-num" id="fa-code" style="background:linear-gradient(135deg,#F59E0B,#EF4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent">------</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:16px">Refreshes in <span id="fa-sec" style="color:#F59E0B;font-weight:700">--</span>s</div>
+      <button class="btn" onclick="copy2FA()" style="padding:11px 28px;border-radius:12px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#F59E0B;font-weight:700;font-size:13px">Copy Code</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PROXY ═══════════════ -->
+<div id="s-proxy" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn glass hdr-btn" onclick="go('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" width="18" height="18"><path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div>
+        <div style="font-size:17px;font-weight:800;background:linear-gradient(135deg,#10B981,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Proxy Manager</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.35)">Route traffic through proxy server</div>
+      </div>
+    </div>
+  </div>
+  <div style="flex:1;padding:0 16px 24px;overflow-y:auto;display:flex;flex-direction:column;gap:12px">
+
+    <!-- Active status bar -->
+    <div id="px-status-bar" class="glass" style="border-radius:14px;padding:13px 16px;display:none;align-items:center;justify-content:space-between;border-color:rgba(16,185,129,.3)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:10px;height:10px;border-radius:50%;background:#10B981;box-shadow:0 0 8px #10B981;animation:pulse 2s infinite"></div>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#10B981">Proxy Active</div>
+          <div id="px-status-txt" style="font-size:11px;color:rgba(255,255,255,.5)"></div>
+        </div>
+      </div>
+      <button onclick="clearProxyNow()" style="padding:7px 14px;border-radius:10px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#EF4444;font-weight:700;font-size:12px;cursor:pointer">Disconnect</button>
+    </div>
+
+    <!-- Type selector -->
+    <div class="glass" style="border-radius:16px;padding:14px">
+      <div style="font-size:10px;color:rgba(16,185,129,.8);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Protocol Type</div>
+      <div style="display:flex;gap:8px">
+        <button id="px-t-http"   onclick="selectPxType('HTTP')"   class="px-type-btn active-type" style="flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #10B981;background:rgba(16,185,129,.15);color:#10B981">HTTP</button>
+        <button id="px-t-https"  onclick="selectPxType('HTTPS')"  class="px-type-btn" style="flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.5)">HTTPS</button>
+        <button id="px-t-socks5" onclick="selectPxType('SOCKS5')" class="px-type-btn" style="flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.5)">SOCKS5</button>
+      </div>
+    </div>
+
+    <!-- Credentials -->
+    <div class="glass" style="border-radius:16px;padding:14px">
+      <div style="font-size:10px;color:rgba(16,185,129,.8);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Server Settings</div>
+      <div style="display:grid;grid-template-columns:3fr 2fr;gap:8px;margin-bottom:8px">
+        <div class="glass" style="border-radius:11px;padding:11px 13px;border-color:rgba(16,185,129,.2)">
+          <div style="font-size:10px;color:rgba(16,185,129,.7);font-weight:700;margin-bottom:5px">HOST / IP</div>
+          <input id="px-host" type="text" autocomplete="off" placeholder="192.168.1.1" style="font-size:14px;width:100%;letter-spacing:.02em"/>
+        </div>
+        <div class="glass" style="border-radius:11px;padding:11px 13px;border-color:rgba(16,185,129,.2)">
+          <div style="font-size:10px;color:rgba(16,185,129,.7);font-weight:700;margin-bottom:5px">PORT</div>
+          <input id="px-port" type="number" placeholder="8080" style="font-size:14px;width:100%"/>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+        <div class="glass" style="border-radius:11px;padding:11px 13px">
+          <div style="font-size:10px;color:rgba(255,255,255,.3);font-weight:700;margin-bottom:5px">USERNAME</div>
+          <input id="px-user" type="text" autocomplete="off" placeholder="optional" style="font-size:13px;width:100%"/>
+        </div>
+        <div class="glass" style="border-radius:11px;padding:11px 13px">
+          <div style="font-size:10px;color:rgba(255,255,255,.3);font-weight:700;margin-bottom:5px">PASSWORD</div>
+          <input id="px-pass" type="password" placeholder="optional" style="font-size:13px;width:100%"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button onclick="applyProxyNow()" id="px-connect-btn"
+          style="flex:1;padding:14px;border-radius:12px;border:none;cursor:pointer;font-weight:800;font-size:14px;color:white;background:linear-gradient(135deg,#10B981,#06B6D4);box-shadow:0 4px 20px rgba(16,185,129,.4)">
+          &#x2714; Connect
+        </button>
+        <button onclick="clearProxyNow()"
+          style="padding:14px 18px;border-radius:12px;border:none;cursor:pointer;font-weight:700;font-size:13px;color:#EF4444;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25)">
+          Clear
+        </button>
+      </div>
+      <button onclick="testProxy()" id="px-test-btn"
+        style="width:100%;padding:13px;border-radius:12px;border:1px solid rgba(6,182,212,.3);cursor:pointer;font-weight:700;font-size:13px;color:#06B6D4;background:rgba(6,182,212,.08);display:flex;align-items:center;justify-content:center;gap:8px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="2" width="16" height="16">
+          <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" stroke-linecap="round"/>
+        </svg>
+        Test Proxy — Check My IP
+      </button>
+      <div id="px-ip-result" style="display:none;margin-top:8px;padding:12px 14px;border-radius:11px;background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.25)">
+        <div style="font-size:10px;color:rgba(6,182,212,.7);font-weight:700;margin-bottom:5px">YOUR CURRENT IP</div>
+        <div id="px-ip-val" style="font-size:20px;font-weight:900;color:#06B6D4;letter-spacing:.04em"></div>
+        <div id="px-ip-loc" style="font-size:11px;color:rgba(255,255,255,.4);margin-top:3px"></div>
+        <div id="px-ip-note" style="font-size:11px;margin-top:6px;font-weight:600"></div>
+      </div>
+    </div>
+
+    <!-- Saved proxy list -->
+    <div id="px-list"></div>
+  </div>
+</div>
+
+<!-- ══ Cookie Import Panel ══ -->
+<div id="modal-cookie" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:199;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px)">
+  <div style="background:#fff;border-radius:22px 22px 0 0;width:100%;max-height:90vh;overflow-y:auto;padding-bottom:20px">
+    <div style="background:linear-gradient(135deg,#7C3AED,#2563EB,#06B6D4);padding:14px 16px;border-radius:22px 22px 0 0;display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center">
+          <svg viewBox="0 0 24 24" fill="white" width="18" height="18"><circle cx="12" cy="12" r="10"/><circle cx="8.5" cy="8.5" r="1.5"/><circle cx="15" cy="9" r="1"/><circle cx="9" cy="15" r="1"/><circle cx="14.5" cy="14.5" r="1.5"/></svg>
+        </div>
+        <span style="color:white;font-weight:700;font-size:15px">Get Cookie Token</span>
+      </div>
+      <button onclick="closeModal('cookie')" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);border:none;color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">&#x2715;</button>
+    </div>
+    <div style="padding:14px 16px 0">
+      <div style="margin-bottom:10px">
+        <label style="font-size:13px;font-weight:700;color:#374151;display:block;margin-bottom:5px">Cookie :</label>
+        <textarea id="ck-input" placeholder="Paste cookies here to import..."
+          style="width:100%;height:85px;border:1.5px solid #D1D5DB;border-radius:10px;padding:10px;font-size:12px;resize:none;font-family:monospace;outline:none;color:#111;background:#F9FAFB;-webkit-user-select:text;user-select:text;display:block"></textarea>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <input type="checkbox" id="ck-ua" style="width:16px;height:16px;accent-color:#7C3AED"/>
+        <label for="ck-ua" style="font-size:13px;color:#374151;font-weight:600;cursor:pointer">User agent</label>
+      </div>
+      <div style="margin-bottom:8px">
+        <label style="font-size:13px;font-weight:700;color:#374151;display:block;margin-bottom:5px">Token :</label>
+        <textarea id="ck-output" placeholder="Current cookies will appear here..." readonly
+          style="width:100%;height:75px;border:1.5px solid #D1D5DB;border-radius:10px;padding:10px;font-size:12px;resize:none;font-family:monospace;outline:none;color:#111;background:#F0FDF4;-webkit-user-select:text;user-select:text;display:block"></textarea>
+      </div>
+      <div id="ck-status" style="min-height:34px;border:1.5px solid #E5E7EB;border-radius:10px;padding:7px 12px;font-size:11px;color:#6B7280;background:#F9FAFB;margin-bottom:12px;font-family:monospace;word-break:break-all"></div>
+      <div style="display:flex;gap:10px;margin-bottom:10px">
+        <button onclick="doCookieImport()" style="flex:1;padding:13px;border-radius:12px;border:none;cursor:pointer;font-weight:700;font-size:14px;background:linear-gradient(135deg,#EF4444,#EC4899);color:white">Import</button>
+        <button onclick="doCookieGet()"    style="flex:1;padding:13px;border-radius:12px;border:none;cursor:pointer;font-weight:700;font-size:14px;background:linear-gradient(135deg,#F59E0B,#EF4444);color:white">Get</button>
+      </div>
+      <button onclick="doLoginNew()" style="width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;font-weight:700;font-size:14px;background:linear-gradient(135deg,#1D4ED8,#7C3AED);color:white;margin-bottom:14px">
+        Login new Facebook
+      </button>
+      <div id="ck-acc-list" style="display:flex;flex-direction:column;gap:7px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Rename modal ══ -->
+<div id="modal-rename" class="modal">
+  <div class="modal-box">
+    <div style="font-size:15px;font-weight:700;margin-bottom:14px;background:linear-gradient(135deg,#A78BFA,#38BDF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Rename Account</div>
+    <div class="glass" style="border-radius:12px;padding:12px 14px;margin-bottom:14px">
+      <input id="rename-inp" type="text" placeholder="Enter name" maxlength="30" autocomplete="off" style="font-size:15px;width:100%"/>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn glass" onclick="closeModal('rename')" style="flex:1;padding:14px;border-radius:14px;font-size:14px;font-weight:600">Cancel</button>
+      <button class="btn grad-main" onclick="confirmRename()" style="flex:1;padding:14px;border-radius:14px;font-size:14px;font-weight:700;color:white">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Delete modal ══ -->
+<div id="modal-delete" class="modal">
+  <div class="modal-box" style="border-color:rgba(239,68,68,.2)">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="width:50px;height:50px;border-radius:16px;background:rgba(239,68,68,.15);display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" width="22" height="22"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:4px">Delete Account?</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.35)">Session data will also be removed</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn glass" onclick="closeModal('delete')" style="flex:1;padding:14px;border-radius:14px;font-size:14px;font-weight:600">Cancel</button>
+      <button class="btn" onclick="confirmDelete()" style="flex:1;padding:14px;border-radius:14px;font-size:14px;font-weight:700;background:linear-gradient(135deg,#EF4444,#DC2626);color:white">Delete</button>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes pulse{0%,100%{box-shadow:0 0 8px #10B981}50%{box-shadow:0 0 18px #10B981}}
+</style>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  Storage helpers
+// ════════════════════════════════════════════════════════════
+var C_KEY='mp_containers_v1', P_KEY='mp_proxies_v1';
+var COLORS=[
+  'linear-gradient(135deg,#7C3AED,#2563EB)',
+  'linear-gradient(135deg,#0891B2,#06B6D4)',
+  'linear-gradient(135deg,#059669,#10B981)',
+  'linear-gradient(135deg,#D97706,#F59E0B)',
+  'linear-gradient(135deg,#BE185D,#EC4899)',
+  'linear-gradient(135deg,#DC2626,#F97316)',
+  'linear-gradient(135deg,#4338CA,#7C3AED)',
+  'linear-gradient(135deg,#0369A1,#38BDF8)',
+  'linear-gradient(135deg,#065F46,#34D399)',
+  'linear-gradient(135deg,#92400E,#FCD34D)'
+];
+
+function load(k)   { try{return JSON.parse(localStorage.getItem(k)||'[]');}catch(e){return[];} }
+function save(k,v) { localStorage.setItem(k,JSON.stringify(v)); }
+function mkId()    { return Date.now().toString(36)+Math.random().toString(36).slice(2); }
+function esc(s)    { return (s||'').replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];}); }
+
+function syncContainers(list){
+  var LP=window.LP;
+  if(LP&&LP.saveContainerList) LP.saveContainerList(JSON.stringify(list));
+}
+
+// ════════════════════════════════════════════════════════════
+//  Header 3-dot menu
+// ════════════════════════════════════════════════════════════
+function toggleHeaderMenu(e){
+  if(e) e.stopPropagation();
+  var m=document.getElementById('hdr-menu');
+  m.style.display=(m.style.display==='block')?'none':'block';
+}
+document.addEventListener('click',function(){ var m=document.getElementById('hdr-menu'); if(m) m.style.display='none'; });
+document.addEventListener('touchstart',function(e){
+  var m=document.getElementById('hdr-menu');
+  if(m&&m.style.display==='block'&&!m.contains(e.target)){m.style.display='none';}
+},{passive:true});
+
+function doHeaderClearCache(){
+  document.getElementById('hdr-menu').style.display='none';
+  var LP=window.LP; if(LP) LP.clearCache();
+  // Show feedback toast
+  showToast('Cache cleared ✓','#A78BFA');
+}
+
+function doHeaderUid(){
+  document.getElementById('hdr-menu').style.display='none';
+  var LP=window.LP;
+  if(LP&&LP.openExternalUrl){LP.openExternalUrl('https://t.me/JAHID_1');}
+  else{try{window.open('https://t.me/JAHID_1','_blank');}catch(e){}}
+}
+
+function doHeaderSelectDelete(){
+  document.getElementById('hdr-menu').style.display='none';
+  enterSelectMode();
+}
+
+// ── Toast notification ──────────────────────────────────────
+function showToast(msg,color){
+  var t=document.getElementById('mp-toast');
+  if(!t){
+    t=document.createElement('div');
+    t.id='mp-toast';
+    t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);'+
+      'padding:10px 22px;border-radius:30px;font-size:13px;font-weight:700;color:white;'+
+      'z-index:9999;opacity:0;transition:all .25s ease;pointer-events:none;white-space:nowrap;'+
+      'box-shadow:0 4px 20px rgba(0,0,0,.5)';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg;
+  t.style.background=color||'#7C3AED';
+  t.style.opacity='1';
+  t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(t._timer);
+  t._timer=setTimeout(function(){
+    t.style.opacity='0';
+    t.style.transform='translateX(-50%) translateY(20px)';
+  },2200);
+}
+
+// ════════════════════════════════════════════════════════════
+//  Select & Delete mode
+// ════════════════════════════════════════════════════════════
+var _selectMode=false;
+var _selected={};  // id → true
+
+function enterSelectMode(){
+  _selectMode=true;
+  _selected={};
+  render();
+}
+
+function exitSelectMode(){
+  _selectMode=false;
+  _selected={};
+  render();
+}
+
+function toggleSelect(id){
+  if(_selected[id]) delete _selected[id];
+  else _selected[id]=true;
+  render(); // re-render to update card highlight + button count
+}
+
+function confirmSelectDelete(){
+  var ids=Object.keys(_selected);
+  if(!ids.length){ exitSelectMode(); return; }
+  var LP=window.LP;
+  ids.forEach(function(id){if(LP) LP.deleteSession(id);});
+  var list=load(C_KEY).filter(function(c){return !_selected[c.id];});
+  save(C_KEY,list); syncContainers(list);
+  var n=ids.length;
+  exitSelectMode();
+  showToast(n+' account'+(n>1?'s':'')+' deleted','#EF4444');
+}
+
+// ════════════════════════════════════════════════════════════
+//  PROXY STATE — tracked in JS memory for instant UI updates
+//  (avoids SharedPreferences async read timing issue)
+// ════════════════════════════════════════════════════════════
+var _px = { host:'', port:'', type:'HTTP', user:'', pass:'' };
+
+// Load proxy state from native on startup
+function initProxyState(){
+  var LP=window.LP; if(!LP) return;
+  var raw=LP.getProxy();
+  if(raw&&raw.length>2){
+    var pts=raw.split('|');
+    _px={type:pts[0]||'HTTP',host:pts[1]||'',port:pts[2]||'',user:pts[3]||'',pass:pts[4]||''};
+  } else {
+    _px={host:'',port:'',type:'HTTP',user:'',pass:''};
+  }
+}
+
+function isProxyActive(){ return !!_px.host; }
+
+// ════════════════════════════════════════════════════════════
+//  Screen navigation
+// ════════════════════════════════════════════════════════════
+function go(s){
+  document.querySelectorAll('.screen').forEach(function(el){el.classList.remove('on');});
+  document.getElementById('s-'+s).classList.add('on');
+  if(s==='home')  render();
+  if(s==='proxy') renderProxy();
+  if(s==='2fa')   init2FA();
+}
+
+// ════════════════════════════════════════════════════════════
+//  Containers
+// ════════════════════════════════════════════════════════════
+function addContainer(){
+  var list=load(C_KEY);
+  list.push({id:mkId(),name:'Account '+(list.length+1),created:Date.now()});
+  save(C_KEY,list); syncContainers(list); render();
+}
+
+// Open a container — save current session first, then switch
+function loginContainer(id){
+  var LP=window.LP; if(!LP) return;
+  var list=load(C_KEY);
+  if(!list.some(function(c){return c.id===id;})) return;
+
+  // Save current session before switching
+  var prevId=LP.getActiveId();
+  if(prevId && prevId!==id){
+    var ck=mergeAllCookies(LP);
+    if(ck) LP.saveSession(prevId,ck);
+  }
+
+  LP.setActiveId(id);
+  var saved=LP.loadSession(id);
+  if(saved){
+    LP.restoreSession(saved);
+  } else {
+    LP.openFacebook();
+  }
+}
+
+function mergeAllCookies(LP){
+  var c1=(LP.getCookies('https://m.facebook.com')||'');
+  var c2=(LP.getCookies('https://www.facebook.com')||'');
+  var c3=(LP.getCookies('https://mbasic.facebook.com')||'');
+  [c2,c3].forEach(function(cx){
+    if(!cx) return;
+    var keys=c1.split(';').map(function(p){return p.trim().split('=')[0];});
+    cx.split(';').forEach(function(p){
+      var k=p.trim().split('=')[0];
+      if(k&&keys.indexOf(k)<0){c1+=(c1?'; ':'')+p.trim();keys.push(k);}
+    });
+  });
+  return c1;
+}
+
+// Rename
+var _rid=null;
+function openRename(id){
+  _rid=id;
+  var c=load(C_KEY).find(function(c){return c.id===id;});
+  var inp=document.getElementById('rename-inp');
+  inp.value=c?c.name:'';
+  document.getElementById('modal-rename').style.display='flex';
+  setTimeout(function(){inp.focus();inp.select();},100);
+}
+function confirmRename(){
+  if(!_rid) return;
+  var v=(document.getElementById('rename-inp').value||'').trim(); if(!v) return;
+  var list=load(C_KEY);
+  list.forEach(function(c){if(c.id===_rid)c.name=v;});
+  save(C_KEY,list); syncContainers(list);
+  closeModal('rename'); render();
+}
+
+// Delete
+var _did=null;
+function openDelete(id){_did=id;document.getElementById('modal-delete').style.display='flex';}
+function confirmDelete(){
+  if(!_did) return;
+  var LP=window.LP; if(LP) LP.deleteSession(_did);
+  var list=load(C_KEY).filter(function(c){return c.id!==_did;});
+  save(C_KEY,list); syncContainers(list);
+  closeModal('delete'); render();
+}
+
+function closeModal(name){
+  document.getElementById('modal-'+name).style.display='none';
+  if(name==='rename')_rid=null;
+  if(name==='delete')_did=null;
+}
+document.getElementById('rename-inp').addEventListener('keydown',function(e){if(e.key==='Enter')confirmRename();});
+
+// ════════════════════════════════════════════════════════════
+//  Cookie Import Panel
+// ════════════════════════════════════════════════════════════
+function openCookiePanel(){
+  document.getElementById('modal-cookie').style.display='flex';
+  document.getElementById('ck-input').value='';
+  document.getElementById('ck-output').value='';
+  document.getElementById('ck-status').textContent='';
+  renderCkAccounts();
+}
+
+function renderCkAccounts(){
+  var list=load(C_KEY);
+  var el=document.getElementById('ck-acc-list');
+  if(!list.length){el.innerHTML='';return;}
+  var grads=['linear-gradient(135deg,#7C3AED,#2563EB)','linear-gradient(135deg,#0891B2,#06B6D4)','linear-gradient(135deg,#059669,#10B981)','linear-gradient(135deg,#D97706,#F59E0B)','linear-gradient(135deg,#BE185D,#EC4899)'];
+  el.innerHTML=list.map(function(c,i){
+    var g=grads[i%grads.length];
+    return '<div onclick="ckSwitchAcc(\''+c.id+'\')" style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;background:'+g+';cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)">'+
+      '<div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.6)"></div>'+
+      '<span style="color:white;font-size:13px;font-weight:600">'+esc(c.name)+'</span>'+
+      '</div>';
+  }).join('');
+}
+
+function ckSwitchAcc(id){
+  var LP=window.LP; if(!LP) return;
+  var prevId=LP.getActiveId();
+  if(prevId&&prevId!==id){
+    var ck=mergeAllCookies(LP); if(ck) LP.saveSession(prevId,ck);
+  }
+  LP.setActiveId(id);
+  var saved=LP.loadSession(id);
+  closeModal('cookie');
+  if(saved) LP.restoreSession(saved); else LP.openFacebook();
+}
+
+function doCookieImport(){
+  var raw=(document.getElementById('ck-input').value||'').trim();
+  var st=document.getElementById('ck-status');
+  if(!raw){st.style.color='#EF4444';st.textContent='Please paste cookies first';return;}
+  var LP=window.LP;
+  var list=load(C_KEY);
+  var newId=mkId();
+  list.push({id:newId,name:'Account '+(list.length+1),created:Date.now()});
+  save(C_KEY,list); syncContainers(list);
+  if(LP){
+    LP.setActiveId(newId);
+    LP.saveSession(newId,raw);
+    LP.importCookies(raw);
+  }
+  st.style.color='#059669';
+  st.textContent='Imported! Opening Facebook...';
+  document.getElementById('ck-output').value=raw;
+  setTimeout(function(){
+    closeModal('cookie');
+    if(LP) LP.restoreSession(raw);
+    render();
+  },800);
+}
+
+function doCookieGet(){
+  var LP=window.LP;
+  var st=document.getElementById('ck-status');
+  var ck='';
+  if(LP){
+    var c1=(LP.getCookies('https://m.facebook.com')||'');
+    var c2=(LP.getCookies('https://www.facebook.com')||'');
+    var c3=(LP.getCookies('https://mbasic.facebook.com')||'');
+    ck=c1;
+    [c2,c3].forEach(function(cx){
+      if(!cx)return;
+      var keys=ck.split(';').map(function(p){return p.trim().split('=')[0];});
+      cx.split(';').forEach(function(p){
+        var k=p.trim().split('=')[0];
+        if(k&&keys.indexOf(k)<0){ck+=(ck?'; ':'')+p.trim();keys.push(k);}
+      });
+    });
+  }
+  if(ck){
+    document.getElementById('ck-output').value=ck;
+    st.style.color='#059669';
+    st.textContent='Cookies fetched successfully';
+    if(LP){var aid=LP.getActiveId();if(aid)LP.saveSession(aid,ck);}
+  } else {
+    st.style.color='#6B7280';
+    st.textContent='No cookies found. Login to Facebook first.';
+  }
+}
+
+function doLoginNew(){
+  closeModal('cookie');
+  var LP=window.LP; if(!LP) return;
+  var list=load(C_KEY);
+  var newId=mkId();
+  list.push({id:newId,name:'Account '+(list.length+1),created:Date.now()});
+  save(C_KEY,list); syncContainers(list);
+  LP.setActiveId(newId);
+  LP.openFacebook();
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+//  Render Home
+// ════════════════════════════════════════════════════════════
+function render(){
+  var list=load(C_KEY), el=document.getElementById('h-list');
+  syncContainers(list);
+
+  if(!list.length){
+    _selectMode=false; _selected={};
+    el.innerHTML=
+      '<div style="text-align:center;padding:60px 20px">'+
+      '<div style="width:90px;height:90px;border-radius:28px;background:linear-gradient(135deg,#7C3AED,#2563EB,#06B6D4);display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 0 50px rgba(124,58,237,.4)">'+
+      '<svg viewBox="0 0 24 24" fill="white" width="44" height="44"><circle cx="9" cy="7" r="3.5"/><circle cx="16.5" cy="8.5" r="2.5"/>'+
+      '<path d="M2 20c0-3.31 3.13-6 7-6s7 2.69 7 6" fill="white"/>'+
+      '<path d="M16.5 14c2.49 0 4.5 1.79 4.5 4" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/>'+
+      '</svg></div>'+
+      '<div style="font-size:20px;font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,#A78BFA,#38BDF8,#34D399);-webkit-background-clip:text;-webkit-text-fill-color:transparent">No Accounts</div>'+
+      '<div style="font-size:13px;color:rgba(255,255,255,.35);margin-bottom:28px;line-height:1.8">Tap + to add a new account container<br>for each Facebook account</div>'+
+      '<button class="btn grad-main" onclick="addContainer()" style="padding:13px 36px;border-radius:18px;color:white;font-weight:700;font-size:15px;box-shadow:0 0 24px rgba(124,58,237,.5)">+ Add Account</button>'+
+      '</div>';
+    return;
+  }
+
+  // ── SELECT MODE ─────────────────────────────────────────
+  if(_selectMode){
+    var n=Object.keys(_selected).length;
+    el.innerHTML=
+      // Select mode banner
+      '<div style="display:flex;align-items:center;justify-content:space-between;'+
+        'padding:11px 14px;border-radius:14px;margin-bottom:12px;'+
+        'background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.3)">'+
+        '<div style="font-size:13px;font-weight:700;color:#EF4444">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" width="15" height="15" style="vertical-align:middle;margin-right:6px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+          'Select to delete'+
+        '</div>'+
+        '<button onclick="exitSelectMode()" style="font-size:12px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:5px 12px;cursor:pointer;-webkit-appearance:none">Cancel</button>'+
+      '</div>'+
+      // Container cards with checkboxes
+      list.map(function(c,i){
+        var grad=COLORS[i%COLORS.length];
+        var num=String(i+1).padStart(2,'0');
+        var isSel=!!_selected[c.id];
+        return (
+          '<div class="ccard" onclick="toggleSelect(\''+c.id+'\')" '+
+            'style="border-color:'+(isSel?'rgba(239,68,68,.6)':'rgba(255,255,255,.09)')+';'+
+            'background:'+(isSel?'rgba(239,68,68,.08)':'rgba(255,255,255,.05)')+';cursor:pointer">'+
+            '<div class="ccard-top">'+
+              '<input type="checkbox" id="chk-'+c.id+'" '+(isSel?'checked':'')+
+                ' onchange="toggleSelect(\''+c.id+'\')" onclick="event.stopPropagation()"'+
+                ' style="width:20px;height:20px;flex-shrink:0;accent-color:#EF4444;cursor:pointer"/>'+
+              '<div class="ccard-num" style="background:'+grad+';box-shadow:0 4px 14px rgba(0,0,0,.3)">'+num+'</div>'+
+              '<div class="ccard-info">'+
+                '<div class="ccard-name">'+esc(c.name)+'</div>'+
+                '<div class="ccard-sub">Tap to '+(isSel?'deselect':'select')+'</div>'+
+              '</div>'+
+            '</div>'+
+          '</div>'
+        );
+      }).join('')+
+      // Delete button
+      '<div style="padding:14px 0 4px">'+
+        '<button id="sel-del-btn" onclick="confirmSelectDelete()" '+
+          'style="width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;'+
+          'font-weight:800;font-size:14px;color:white;'+
+          'background:linear-gradient(135deg,#EF4444,#DC2626);'+
+          'box-shadow:0 4px 20px rgba(239,68,68,.4)">'+
+          'Delete Selected ('+n+')'+
+        '</button>'+
+      '</div>';
+    return;
+  }
+
+  // ── NORMAL MODE ─────────────────────────────────────────
+  el.innerHTML = list.map(function(c,i){
+    var grad=COLORS[i%COLORS.length];
+    var num=String(i+1).padStart(2,'0');
+    return (
+      '<div class="ccard" style="border-color:rgba(255,255,255,.09)">'+
+        '<div class="ccard-top">'+
+          '<div class="ccard-num" style="background:'+grad+';box-shadow:0 4px 14px rgba(0,0,0,.3)">'+num+'</div>'+
+          '<div class="ccard-info">'+
+            '<div class="ccard-name">'+esc(c.name)+'</div>'+
+            '<div class="ccard-sub">Facebook Account</div>'+
+          '</div>'+
+          '<div class="ccard-actions">'+
+            '<button class="icon-btn" onclick="openRename(\''+c.id+'\')" style="background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.2)">'+
+              '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,.9)" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+            '</button>'+
+            '<button class="icon-btn" onclick="openDelete(\''+c.id+'\')" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.18)">'+
+              '<svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+            '</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="ccard-foot">'+
+          '<button class="open-btn" onclick="loginContainer(\''+c.id+'\')" style="background:'+grad+';box-shadow:0 4px 16px rgba(0,0,0,.3)">'+
+            '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="16" height="16"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+            'Open Facebook'+
+          '</button>'+
+        '</div>'+
+      '</div>'
+    );
+  }).join('')+
+  '<div style="padding:10px 0 4px;text-align:center">'+
+    '<button class="btn grad-main" onclick="addContainer()" style="padding:12px 30px;border-radius:16px;color:white;font-weight:700;font-size:13px;box-shadow:0 0 16px rgba(124,58,237,.4)">+ Add Account</button>'+
+  '</div>';
+}
+
+// ════════════════════════════════════════════════════════════
+//  2FA — TOTP Generator
+// ════════════════════════════════════════════════════════════
+var _2faTimer=null, _2faKey='';
+
+function init2FA(){
+  clearInterval(_2faTimer);
+  document.getElementById('fa-result').style.display='none';
+  document.getElementById('fa-key').value=_2faKey||'';
+}
+
+function base32Decode(s){
+  var alpha='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  s=s.replace(/=+$/,'').toUpperCase().replace(/[^A-Z2-7]/g,'');
+  var bits=0,val=0,out=[];
+  for(var i=0;i<s.length;i++){
+    val=(val<<5)|alpha.indexOf(s[i]); bits+=5;
+    if(bits>=8){bits-=8;out.push((val>>>bits)&0xFF);}
+  }
+  return new Uint8Array(out);
+}
+
+async function generate2FA(){
+  var raw=(document.getElementById('fa-key').value||'').trim();
+  if(!raw){return;}
+  _2faKey=raw;
+  try{
+    await refreshCode(raw);
+    document.getElementById('fa-result').style.display='block';
+    clearInterval(_2faTimer);
+    _2faTimer=setInterval(function(){refreshCode(raw);},1000);
+  }catch(e){
+    document.getElementById('fa-code').textContent='ERROR';
+  }
+}
+
+async function refreshCode(secret){
+  var key=base32Decode(secret);
+  var step=Math.floor(Date.now()/1000/30);
+  var tb=new Uint8Array(8);
+  for(var i=7;i>=0;i--){tb[i]=step&0xff;step=Math.floor(step/256);}
+  var ck=await crypto.subtle.importKey('raw',key,{name:'HMAC',hash:'SHA-1'},false,['sign']);
+  var sig=new Uint8Array(await crypto.subtle.sign('HMAC',ck,tb));
+  var off=sig[19]&0xf;
+  var code=((sig[off]&0x7f)<<24)|(sig[off+1]<<16)|(sig[off+2]<<8)|sig[off+3];
+  var otp=String(code%1000000).padStart(6,'0');
+  document.getElementById('fa-code').textContent=otp;
+  var rem=30-(Math.floor(Date.now()/1000)%30);
+  document.getElementById('fa-sec').textContent=rem;
+  var circ=327;
+  document.getElementById('fa-ring').style.strokeDashoffset=String(circ*(1-rem/30));
+  var color=rem<=10?'#EF4444':rem<=20?'#F59E0B':'#10B981';
+  document.getElementById('fa-sec').style.color=color;
+}
+
+function copy2FA(){
+  var code=document.getElementById('fa-code').textContent||'';
+  if(!code||code==='------') return;
+  var LP=window.LP;
+  if(LP) LP.copyText(code);
+  else try{navigator.clipboard.writeText(code);}catch(e){}
+}
+
+// ════════════════════════════════════════════════════════════
+//  Proxy Manager — real WebView routing via ProxyController
+//  Active proxy state is tracked in JS memory (_px object)
+//  so UI updates are INSTANT without SharedPreferences delay
+// ════════════════════════════════════════════════════════════
+var _pxType='HTTP';
+
+function selectPxType(t){
+  _pxType=t;
+  var map={HTTP:'px-t-http',HTTPS:'px-t-https',SOCKS5:'px-t-socks5'};
+  Object.keys(map).forEach(function(k){
+    var el=document.getElementById(map[k]);if(!el)return;
+    if(k===t){el.style.border='2px solid #10B981';el.style.background='rgba(16,185,129,.15)';el.style.color='#10B981';}
+    else{el.style.border='2px solid rgba(255,255,255,.1)';el.style.background='rgba(255,255,255,.05)';el.style.color='rgba(255,255,255,.5)';}
+  });
+}
+
+function applyProxyNow(){
+  var h=(document.getElementById('px-host').value||'').trim();
+  var p=(document.getElementById('px-port').value||'').trim();
+  var u=(document.getElementById('px-user').value||'').trim();
+  var pw=(document.getElementById('px-pass').value||'').trim();
+  if(!h||!p){return;}
+
+  // Update JS state IMMEDIATELY — no waiting for native bridge
+  _px={host:h,port:p,type:_pxType,user:u,pass:pw};
+
+  var LP=window.LP;
+  if(LP) LP.setProxy(_pxType,h,p,u,pw);
+
+  // Save to proxy list
+  var list=load(P_KEY);
+  if(!list.some(function(x){return x.host===h&&x.port===p;})){
+    list.push({id:mkId(),type:_pxType,host:h,port:p,user:u,pass:pw,created:Date.now()});
+    save(P_KEY,list);
+  }
+
+  // Clear old IP result — will be stale after proxy change
+  document.getElementById('px-ip-result').style.display='none';
+
+  // Show status + re-render list instantly
+  showPxStatus(h,p,_pxType);
+  renderProxy();
+
+  // Auto-test new proxy after 800ms (let WebView apply proxy first)
+  clearTimeout(window._pxTestTimer);
+  window._pxTestTimer=setTimeout(function(){ testProxy(); }, 800);
+}
+
+function clearProxyNow(){
+  // Update JS state IMMEDIATELY
+  _px={host:'',port:'',type:'HTTP',user:'',pass:''};
+
+  var LP=window.LP;
+  if(LP) LP.clearProxy();
+
+  ['px-host','px-port','px-user','px-pass'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('px-status-bar').style.display='none';
+  document.getElementById('px-ip-result').style.display='none';
+  selectPxType('HTTP');
+  renderProxy();
+}
+
+function testProxy(){
+  var btn=document.getElementById('px-test-btn');
+  var res=document.getElementById('px-ip-result');
+  var val=document.getElementById('px-ip-val');
+  var loc=document.getElementById('px-ip-loc');
+  var note=document.getElementById('px-ip-note');
+  btn.textContent='Checking...';
+  btn.style.opacity='0.6';
+  res.style.display='none';
+
+  var endpoints=[
+    {url:'http://ip-api.com/json/',parse:function(t){var d=JSON.parse(t);return{ip:d.query,loc:(d.city?d.city+', ':'')+d.country+(d.isp?' · '+d.isp:'')}}},
+    {url:'https://api.ipify.org/?format=json',parse:function(t){var d=JSON.parse(t);return{ip:d.ip,loc:''}}},
+    {url:'https://ipapi.co/json/',parse:function(t){var d=JSON.parse(t);return{ip:d.ip,loc:(d.city?d.city+', ':'')+(d.country_name||'')+(d.org?' · '+d.org:'')}}},
+    {url:'https://api64.ipify.org/?format=json',parse:function(t){var d=JSON.parse(t);return{ip:d.ip,loc:''}}}
+  ];
+  var idx=0;
+
+  function tryNext(){
+    if(idx>=endpoints.length){
+      btn.textContent='Test Proxy — Check My IP';
+      btn.style.opacity='1';
+      val.textContent='Connection failed';
+      loc.textContent='Proxy may be blocking IP check services';
+      note.textContent='❌ Try a different proxy or check host/port';
+      note.style.color='#EF4444';
+      res.style.display='block';
+      return;
+    }
+    var ep=endpoints[idx++];
+    var x=new XMLHttpRequest();
+    x.open('GET',ep.url,true);
+    x.timeout=8000;
+    x.onload=function(){
+      try{
+        var d=ep.parse(x.responseText);
+        btn.textContent='Test Proxy — Check My IP';
+        btn.style.opacity='1';
+        val.textContent=d.ip||'Unknown';
+        loc.textContent=d.loc||'';
+        if(isProxyActive()){
+          note.textContent='✅ Proxy is routing traffic';
+          note.style.color='#34D399';
+        }else{
+          note.textContent='ℹ Direct connection (no proxy set)';
+          note.style.color='rgba(255,255,255,.4)';
+        }
+        res.style.display='block';
+      }catch(e){ tryNext(); }
+    };
+    x.onerror=function(){ tryNext(); };
+    x.ontimeout=function(){ tryNext(); };
+    x.send();
+  }
+  tryNext();
+}
+
+function showPxStatus(h,p,t){
+  document.getElementById('px-status-txt').textContent=(t||'HTTP')+' · '+h+':'+p;
+  document.getElementById('px-status-bar').style.display='flex';
+}
+
+// Switch a saved proxy — fill form and apply immediately
+function applyProxyEntry(id){
+  var list=load(P_KEY);
+  var p=null;
+  for(var i=0;i<list.length;i++){if(list[i].id===id){p=list[i];break;}}
+  if(!p) return;
+  document.getElementById('px-host').value=p.host;
+  document.getElementById('px-port').value=p.port;
+  document.getElementById('px-user').value=p.user||'';
+  document.getElementById('px-pass').value=p.pass||'';
+  selectPxType(p.type||'HTTP');
+  applyProxyNow();  // JS _px state updated inside here
+}
+
+function delProxy(id){
+  save(P_KEY,load(P_KEY).filter(function(p){return p.id!==id;}));
+  renderProxy();
+}
+
+// renderProxy() uses JS _px memory — NO read from native bridge
+function renderProxy(){
+  // Show/hide active status bar based on JS state
+  if(isProxyActive()){
+    showPxStatus(_px.host,_px.port,_px.type);
+    selectPxType(_px.type||'HTTP');
+    document.getElementById('px-host').value=_px.host;
+    document.getElementById('px-port').value=_px.port;
+    document.getElementById('px-user').value=_px.user||'';
+  } else {
+    document.getElementById('px-status-bar').style.display='none';
+  }
+
+  var list=load(P_KEY);
+  var el=document.getElementById('px-list');
+  if(!list.length){el.innerHTML='';return;}
+
+  el.innerHTML='<div style="font-size:10px;color:rgba(16,185,129,.7);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Saved Proxies</div>'+
+  list.map(function(p){
+    var isActive=(_px.host===p.host && _px.port===p.port);
+    var border=isActive?'border:1.5px solid #10B981':'border:1px solid rgba(255,255,255,.08)';
+    var bg=isActive?'background:rgba(16,185,129,.10)':'';
+    var badge=isActive?
+      '<span style="font-size:10px;font-weight:700;color:#10B981;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);border-radius:6px;padding:2px 7px">● ACTIVE</span>':
+      '<button onclick="applyProxyEntry(\''+p.id+'\')" style="font-size:11px;font-weight:700;color:white;background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.3);border-radius:7px;padding:4px 10px;cursor:pointer;-webkit-appearance:none">Switch</button>';
+    return '<div class="glass" style="border-radius:13px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;'+border+';'+bg+'">'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:13px;font-weight:700;color:'+(isActive?'#34D399':'#10B981')+'">'+esc(p.host)+':'+esc(p.port)+'</div>'+
+        '<div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">'+(p.type||'HTTP')+(p.user?' · '+esc(p.user):'')+'</div>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:10px">'+
+        badge+
+        '<button class="btn" onclick="delProxy(\''+p.id+'\')" style="width:30px;height:30px;border-radius:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.18)">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+        '</button>'+
+      '</div></div>';
+  }).join('');
+}
+
+// ── Shared text from other apps (WhatsApp / Telegram) ──────────────────
+function handleSharedText(text){
+  if(!text) return;
+  var parts=text.trim().split(/\s+/);
+  var uid=(parts[0]||'').trim();
+  var pass=(parts[1]||'').trim();
+  if(!uid) return;
+  var LP=window.LP;
+  var list=load(C_KEY);
+  var newId=mkId();
+  list.push({id:newId,name:'Account '+(list.length+1),created:Date.now()});
+  save(C_KEY,list);
+  syncContainers(list);
+  if(LP){
+    LP.setActiveId(newId);
+    LP.setPendingLogin(uid, pass);
+    LP.openFacebook();
+  }
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+//  Init
+// ════════════════════════════════════════════════════════════
+initProxyState();
+render();
+</script>
+</body>
+</html>
